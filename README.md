@@ -57,7 +57,7 @@ O sistema é orquestrado via Docker Compose e dividido nos seguintes serviços:
 1. **Clone o repositório:**
 
 ```bash
-git clone [https://github.com/HanielCS/dashboard-analytics.git](https://github.com/HanielCS/dashboard-analytics.git)
+git clone https://github.com/HanielCS/dashboard-analytics.git
 cd dashboard-analytics
 ```
 
