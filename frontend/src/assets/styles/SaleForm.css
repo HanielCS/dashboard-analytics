@@ -1,0 +1,171 @@
+/* Layout do Card */
+.form-card { 
+  margin-bottom: 25px; 
+  border-left: 5px solid var(--success-color); 
+  transition: all 0.3s ease;
+  padding: 20px;
+}
+
+.form-card.edit-mode { 
+  border-left-color: var(--warning-color);
+  background-color: #fffdf5; 
+}
+
+.form-title { 
+  margin-bottom: 20px; 
+  color: var(--success-color); 
+  font-size: 1rem; 
+  text-transform: uppercase; 
+  font-weight: bold;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.edit-mode .form-title { color: var(--warning-color); }
+
+.form-body { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+}
+
+/* Linha dos Inputs */
+.fields-row { 
+  display: flex; 
+  gap: 15px; 
+  flex-wrap: wrap; 
+  align-items: center; 
+}
+
+.input-field { 
+  padding: 0 12px; 
+  border: 1px solid var(--border-color); 
+  border-radius: 6px; 
+  height: 42px; 
+  flex: 1; 
+  min-width: 120px; 
+  background-color: #ffffff; 
+  color: #333; 
+  transition: border-color 0.2s; 
+}
+
+.input-field:focus { 
+  border-color: var(--accent-color); 
+  outline: none; 
+}
+
+.input-small { 
+  flex: 0 0 110px; 
+  text-align: center; 
+}
+
+.input-select { flex: 1.5; }
+
+/* Grupo de Quantidade */
+.qty-input-group { 
+  display: flex; 
+  border: 1px solid var(--border-color); 
+  border-radius: 6px; 
+  overflow: hidden; 
+  height: 42px; 
+  background-color: #ffffff; 
+  flex: 0 0 auto; 
+}
+
+.input-qty { 
+  color: black;
+  background-color: white;
+  border: none; 
+  text-align: center; 
+  width: 50px; 
+  padding: 0; 
+  -moz-appearance: textfield; 
+  appearance: textfield; 
+}
+
+.input-qty::-webkit-outer-spin-button, .input-qty::-webkit-inner-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.qty-btn { 
+  background: #f4f6f8; 
+  color: var(--text-color); 
+  border: none; 
+  width: 35px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  font-size: 1.2rem; 
+  display: flex; align-items: center; justify-content: center; 
+  transition: background 0.2s; 
+}
+
+.qty-btn:hover { background: #e0e4e8; }
+
+/* --- Linha dos Botões --- */
+.actions-row { 
+  display: flex; 
+  justify-content: center; 
+  gap: 15px; 
+  margin-top: 15px; 
+  border-top: 1px dashed #eee; 
+  padding-top: 15px; 
+}
+
+.btn-modern { 
+  display: flex; align-items: center; justify-content: center; 
+  gap: 8px; padding: 0 25px; height: 45px; border: none; border-radius: 6px; 
+  cursor: pointer; font-weight: 600; color: white; transition: all 0.2s; 
+  font-size: 1rem; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+}
+
+.icon-text { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+}
+
+/* Cores */
+.save-btn { 
+  background: var(--success-color); 
+  min-width: 150px; 
+}
+
+.save-btn:hover { 
+  background: var(--success-hover); 
+  transform: translateY(-1px); 
+}
+
+.edit-mode .save-btn { background: var(--warning-color); }
+.edit-mode .save-btn:hover { background: #f39c12; }
+
+.cancel-btn { 
+  background: transparent; 
+  color: var(--danger-color); 
+  border: 1px solid var(--danger-color); 
+  box-shadow: none; 
+}
+
+.cancel-btn:hover { background: #fff5f5; }
+
+/* Loader */
+.loader { 
+  width: 14px; height: 14px; 
+  border: 2px solid #fff; 
+  border-bottom-color: transparent; 
+  border-radius: 50%; 
+  display: inline-block; 
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .fields-row { flex-direction: column; align-items: stretch; }
+  .actions-row { flex-direction: column-reverse; }
+  .save-btn { width: 100%; }
+  .cancel-btn { width: 100%; border: none; }
+}

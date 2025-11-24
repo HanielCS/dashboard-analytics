@@ -1,0 +1,18 @@
+.chart-container {
+  height: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-title {
+  margin-bottom: 15px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.canvas-wrapper {
+  flex-grow: 1;
+  position: relative;
+}

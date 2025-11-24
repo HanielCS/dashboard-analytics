@@ -1,0 +1,97 @@
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 5px solid var(--primary-color);
+}
+
+/* Ações Rápidas (Botões Superiores) */
+.quick-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.label {
+  font-weight: bold;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-right: 5px;
+  width: 100%;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: all 0.2s;
+  font-size: 0.85rem;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.filter-btn:hover { background: #eef2f5; }
+
+.filter-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Seletor Personalizado (Inputs e Botão Ir) */
+.custom-range {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding-top: 15px;
+  border-top: 1px dashed #eee;
+}
+
+/* Linha dos Inputs de Data */
+.date-inputs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+input[type="date"] {
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-color);
+  background: var(--white);
+  flex: 1;
+  min-width: 0;
+}
+
+.separator { 
+  color: var(--text-muted); 
+  font-size: 0.9rem; 
+}
+
+/* Botão Ir */
+.btn-go {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  align-self: flex-end;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.btn-go:hover { background: #2980b9; }

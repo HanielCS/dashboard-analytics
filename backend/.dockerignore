@@ -1,0 +1,43 @@
+# Ignorar ambientes virtuais
+venv/
+.venv/
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Cache do pip
+pip-wheel-metadata/
+pip-selfcheck.json
+
+# Configs locais
+.env
+*.env
+.env.*
+
+# Configs de IDE/Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# Pastas de build temporárias
+build/
+dist/
+*.egg-info/
+
+# Arquivos do Docker
+Dockerfile
+docker-compose.yml
+
+# Node
+node_modules/
+
+# Testes e artefatos
+.coverage
+htmlcov/
+pytest_cache/

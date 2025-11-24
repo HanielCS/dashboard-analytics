@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pandas
+sqlmodel
+psycopg2-binary
+openpyxl
+reportlab
+scikit-learn
+statsmodels
+redis
+pytest
+httpx
+python-multipart
+celery[redis]
+python-multipart
+prometheus-fastapi-instrumentator 

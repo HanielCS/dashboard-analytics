@@ -1,0 +1,17 @@
+.chart-container {
+  margin-bottom: 30px;
+  margin-top: 30px;
+  height: 400px; 
+  display: flex; flex-direction: column;
+}
+
+.chart-title {
+  margin-bottom: 15px; color: var(--text-muted);
+  font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
+}
+
+.canvas-wrapper { 
+  flex-grow: 1; 
+  position: relative; 
+  width: 100%; 
+}

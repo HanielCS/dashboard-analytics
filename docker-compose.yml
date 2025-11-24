@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  # MONITORAMENTO (PROMETHEUS)
+  prometheus:
+    image: prom/prometheus
+    container_name: dashboard-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+
+  # VISUALIZAÇÃO (GRAFANA)
+  grafana:
+    image: grafana/grafana
+    container_name: dashboard-grafana
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  # BROKER DE MENSAGENS (RABBITMQ)
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: dashboard-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+
+  # CACHE (REDIS)
+  redis:
+    image: redis:alpine
+    container_name: dashboard-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # BANCO DE DADOS (POSTGRES)
+  db:
+    image: postgres:15-alpine
+    container_name: dashboard-db
+    environment:
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: senha_secreta
+      POSTGRES_DB: dashboard_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  # BACKEND (API)
+  backend-service:
+    build: ./backend
+    container_name: dashboard-backend
+    restart: always
+    volumes:
+      - ./backend:/app:rw
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+    environment:
+      DATABASE_URL: postgresql://usuario:senha_secreta@dashboard-db:5432/dashboard_db
+      REDIS_URL: redis://dashboard-redis:6379/0
+      CELERY_BROKER_URL: amqp://guest:guest@dashboard-rabbitmq:5672//
+      CELERY_RESULT_BACKEND: redis://dashboard-redis:6379/0
+    command: >
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app
+
+  # CELERY WORKER (PROCESSAMENTO EM SEGUNDO PLANO)
+  celery-worker:
+    build: ./backend
+    container_name: dashboard-worker
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - backend-service
+      - rabbitmq
+      - db
+    environment:
+      DATABASE_URL: postgresql://usuario:senha_secreta@dashboard-db:5432/dashboard_db
+      REDIS_URL: redis://dashboard-redis:6379/0
+      CELERY_BROKER_URL: amqp://guest:guest@dashboard-rabbitmq:5672//
+      CELERY_RESULT_BACKEND: redis://dashboard-redis:6379/0
+    command: ["/venv/bin/celery", "-A", "celery_worker.celery_app", "worker", "--loglevel=info"]
+
+  # FRONTEND (VUE.JS)
+  frontend-service:
+    build:
+      context: ./frontend
+      target: build-stage
+    container_name: dashboard-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "8080:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev
+    depends_on:
+      - backend-service
+
+  # TESTES E2E (CYPRESS)
+  e2e:
+    profiles: ["test"] # Só roda se usar --profile test
+    build: ./e2e
+    container_name: dashboard-e2e
+    environment:
+      - CYPRESS_baseUrl=http://frontend-service:5173
+    volumes:
+      - ./e2e/cypress:/app/cypress
+      - ./e2e/cypress/videos:/app/cypress/videos
+      - ./e2e/cypress/screenshots:/app/cypress/screenshots
+    depends_on:
+      - frontend-service
+      - backend-service
+    ipc: host 
+    restart: "no"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,28 @@
+:root {
+  /* Paleta de Cores */
+  --primary-color: #2c3e50;      /* Azul Escuro (Headers, Botões principais) */
+  --secondary-color: #34495e;    /* Azul Escuro Hover */
+  
+  --accent-color: #3498db;       /* Azul Claro (Destaques, Spinner) */
+  
+  --success-color: #27ae60;      /* Verde (Salvar, Dinheiro) */
+  --success-hover: #2ecc71;
+
+  --danger-color: #e74c3c;       /* Vermelho (Deletar, Erro) */
+  --danger-hover: #c0392b;
+
+  --warning-color: #f39c12;      /* Laranja (Edição) */
+
+  --bg-color: #f4f6f8;           /* Fundo do site */
+  --text-color: #2c3e50;         /* Cor do texto principal */
+  --text-muted: #7f8c8d;         /* Texto secundário (cinza) */
+
+  --white: #ffffff;
+  --border-color: #ddd;
+
+  /* Configurações Gerais */
+  --border-radius: 8px;
+  --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 10px rgba(0,0,0,0.1);
+}
