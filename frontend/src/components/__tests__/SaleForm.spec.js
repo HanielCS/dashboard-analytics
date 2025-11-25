@@ -2,35 +2,42 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import SaleForm from '../SaleForm.vue'
 import api from '../../services/api'
+import toast from '../../services/toast' // Importamos o serviço de toast real
 
-// --- MOCK DA API ---
-// Dizemos ao Vitest: "Não uses o api.js real, usa este falso aqui"
-// Isto evita que o teste tente conectar ao Backend real
+// MOCKS
+// Simulação a API para não fazer chamadas reais ao Backend durante o teste
 vi.mock('../../services/api', () => ({
   default: {
-    criarVenda: vi.fn(() => Promise.resolve({ id: 1 })), // Simula sucesso
+    criarVenda: vi.fn(() => Promise.resolve({ id: 1 })),
     atualizarVenda: vi.fn(() => Promise.resolve({ id: 1 }))
+  }
+}))
+
+// Simulação do Toast para verificar se ele foi chamado, sem precisar renderizar na tela
+vi.mock('../../services/toast', () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn()
   }
 }))
 
 describe('SaleForm.vue', () => {
   
   beforeEach(() => {
-    vi.clearAllMocks() // Limpa contadores antes de cada teste
+    vi.clearAllMocks()
   })
 
   it('impede envio com campos vazios', async () => {
-    // Mock do window.alert (pois ele não existe no ambiente de teste JSDOM por padrão)
-    window.alert = vi.fn()
-    
     const wrapper = mount(SaleForm)
     
-    // Tenta clicar em salvar sem preencher nada (vendas e qtd vazios)
+    // Tenta clicar em salvar sem preencher nada
     await wrapper.find('.save-btn').trigger('click')
     
-    // Verifica se o alerta foi chamado
-    expect(window.alert).toHaveBeenCalled()
-    // Verifica se a API NÃO foi chamada (o teste passou se isso for verdade)
+    // Verifica se o TOAST de aviso foi chamado
+    expect(toast.warning).toHaveBeenCalled()
+    
+    // Verifica se a API NÃO foi chamada
     expect(api.criarVenda).not.toHaveBeenCalled()
   })
 
@@ -38,34 +45,31 @@ describe('SaleForm.vue', () => {
     const wrapper = mount(SaleForm)
 
     // 1. Preenche os campos
-    // Encontra inputs. A ordem depende do seu template.
-    // Assumindo: [0]=Data, [1]=Valor, [2]=Qtd (dentro do grupo personalizado)
-    // Nota: O input de quantidade pode ser difícil de achar se estiver dentro da div .qty-input-group
-    
-    const inputValor = wrapper.findAll('input[type="number"]')[0] // Valor Total
-    const inputQtd = wrapper.findAll('input[type="number"]')[1]   // Qtd
     const inputData = wrapper.find('input[placeholder="Data"]')
+    const inputValor = wrapper.find('input[placeholder="Valor (R$)"]') // type="text"
+    const inputQtd = wrapper.find('input[placeholder="Qtd"]')
 
     await inputData.setValue('10/10')
-    await inputValor.setValue(100)
+    await inputValor.setValue('100,50') // Testando com vírgula para verificar a conversão
     await inputQtd.setValue(5)
 
     // 2. Clica em Salvar
     await wrapper.find('.save-btn').trigger('click')
 
-    // 3. Verifica se a API foi chamada com os dados certos
+    // 3. Verifica se a API foi chamada com os dados certos e convertidos
     expect(api.criarVenda).toHaveBeenCalledTimes(1)
+    
     expect(api.criarVenda).toHaveBeenCalledWith(expect.objectContaining({
       data: '10/10',
-      vendas: 100,
+      vendas: 100.50,
       qtd_pedidos: 5,
-      categoria: 'Eletrônicos' // Valor padrão
+      categoria: 'Eletrônicos'
     }))
 
-    // 4. Verifica se o componente avisou o Pai (emit)
-    // O 'venda-salva' é emitido após o sucesso da API
-    // Como a API é assíncrona, precisamos esperar as promessas resolverem
+    // 4. Aguarda o ciclo de promessa para verificar o sucesso
     await new Promise(resolve => setTimeout(resolve, 0))
+    expect(toast.success).toHaveBeenCalled()
+    
     expect(wrapper.emitted()).toHaveProperty('venda-salva')
   })
 
@@ -74,7 +78,7 @@ describe('SaleForm.vue', () => {
       id: 99,
       data: '25/12',
       categoria: 'Jogos',
-      vendas: 500,
+      vendas: 500.00,
       qtd_pedidos: 1
     }
 
@@ -87,14 +91,14 @@ describe('SaleForm.vue', () => {
     // Verifica se o texto do botão mudou para "Atualizar"
     expect(wrapper.find('.save-btn').text()).toContain('Atualizar')
     
-    // Verifica se os inputs foram preenchidos automaticamente
-    const inputValor = wrapper.findAll('input[type="number"]')[0]
+    // Verifica se o input de valor foi preenchido corretamente (convertido para string no formulário)
+    const inputValor = wrapper.find('input[placeholder="Valor (R$)"]')
     expect(inputValor.element.value).toBe('500')
     
-    // Testa o envio da Edição
+    // Simula o clique em Atualizar
     await wrapper.find('.save-btn').trigger('click')
     
-    // Deve chamar atualizarVenda, não criarVenda
+    // Verifica se chamou a rota de atualização (PUT) em vez de criação
     expect(api.atualizarVenda).toHaveBeenCalledTimes(1)
     expect(api.atualizarVenda).toHaveBeenCalledWith(99, expect.objectContaining({
       vendas: 500,

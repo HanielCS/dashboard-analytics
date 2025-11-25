@@ -5,46 +5,37 @@ import KPICards from '../KPICards.vue'
 describe('KPICards.vue', () => {
   
   it('renderiza corretamente os valores das props', () => {
-    // 1. Monta o componente com dados falsos
     const wrapper = mount(KPICards, {
       props: {
-        totalVendas: 5000,
-        totalPedidos: 50,
+        totais: {
+          vendas: 5000,
+          pedidos: 50,
+          ticket: 100
+        },
+        variacao: {
+          vendas: 10,
+          pedidos: 5,
+          ticket: 2
+        },
         melhorCategoria: 'Eletrônicos'
       }
     })
 
-    // 2. Verifica se o texto renderizado contém os valores esperados
-    // Nota: O espaço nbsp (não quebrável) às vezes é usado por formatadores, 
-    // mas aqui esperamos o padrão "R$ 5.000,00"
-    expect(wrapper.text()).toContain('R$ 5.000,00') // Verifica formatação de moeda
-    expect(wrapper.text()).toContain('50')           // Verifica número de pedidos
-    expect(wrapper.text()).toContain('Eletrônicos')  // Verifica categoria
+    // Verifica se o texto renderizado contém os valores formatados
+    expect(wrapper.text()).toContain('5.000,00')    // Valor formatado
+    expect(wrapper.text()).toContain('50')          // Pedidos
+    expect(wrapper.text()).toContain('Eletrônicos') // Melhor Categoria
+    expect(wrapper.text()).toContain('+10.0%')      // Variação (Badge)
   })
 
-  it('calcula o ticket médio corretamente', () => {
-    // Cenário: 1000 reais em 4 pedidos = média de 250
+  it('renderiza badges de variação negativa corretamente', () => {
     const wrapper = mount(KPICards, {
       props: {
-        totalVendas: 1000,
-        totalPedidos: 4,
-        melhorCategoria: 'Casa'
+        totais: { vendas: 1000, pedidos: 10, ticket: 100 },
+        variacao: { vendas: -5, pedidos: 0, ticket: 0 }
       }
     })
 
-    // Verifica se o cálculo (1000 / 4 = 250) foi feito e formatado
-    expect(wrapper.text()).toContain('R$ 250,00')
-  })
-
-  it('lida com zero pedidos para evitar divisão por zero', () => {
-    const wrapper = mount(KPICards, {
-      props: {
-        totalVendas: 0,
-        totalPedidos: 0
-      }
-    })
-
-    // Se pedidos for 0, o ticket médio deve ser R$ 0,00 (não NaN ou Infinity)
-    expect(wrapper.text()).toContain('R$ 0,00')
+    expect(wrapper.text()).toContain('-5.0%')
   })
 })

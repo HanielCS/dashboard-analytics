@@ -7,7 +7,7 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-  # --- JOB 1: TESTES DO BACKEND (PYTHON) ---
+  # JOB 1: TESTES DO BACKEND (PYTHON)
   backend-tests:
     runs-on: ubuntu-latest
     steps:
@@ -24,11 +24,16 @@ jobs:
         pip install -r backend/requirements.txt
         
     - name: Run Tests (Pytest)
+      env:
+        # Valores "fakes" apenas para o Python não dar erro ao importar o arquivo database.py
+        # O conftest.py vai sobrescrever isso com o banco em memória durante o teste real.
+        DATABASE_URL: "sqlite:///dummy.db" 
+        REDIS_URL: "redis://localhost:6379/0"
       run: |
         cd backend
         python -m pytest tests/
 
-  # --- JOB 2: TESTES DO FRONTEND (VUE.JS) ---
+  # JOB 2: TESTES DO FRONTEND (VUE.JS)
   frontend-tests:
     runs-on: ubuntu-latest
     steps:
