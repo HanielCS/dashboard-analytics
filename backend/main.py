@@ -8,6 +8,35 @@ import time
 from sqlalchemy.exc import OperationalError
 from prometheus_fastapi_instrumentator import Instrumentator
 
+# CONFIGURAÇÃO DE METADADOS DA API
+description = """
+API do Dashboard Executivo de Vendas. 🚀
+
+## Funcionalidades
+* **CRUD de Vendas**: Criar, ler, atualizar e deletar registros.
+* **Dashboard & KPIs**: Cálculos de totais e variações percentuais.
+* **Predição (IA)**: Previsão de vendas futuras usando ARIMA.
+* **Importação/Exportação**: Suporte a CSV, Excel e PDF.
+
+## Autores
+* **Haniel Carvalho** - *Desenvolvedor Full Stack*
+"""
+
+tags_metadata = [
+    {
+        "name": "Vendas",
+        "description": "Operações de CRUD para gestão de vendas diárias.",
+    },
+    {
+        "name": "BI & Analytics",
+        "description": "Endpoints de inteligência de dados, KPIs e predições.",
+    },
+    {
+        "name": "Arquivos",
+        "description": "Upload de CSV e download de relatórios (PDF/Excel).",
+    },
+]
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     max_retries = 10
@@ -16,23 +45,34 @@ async def lifespan(app: FastAPI):
             print(f"Tentativa de conexão com o banco {i+1}/{max_retries}...")
             create_db_and_tables()
             criar_dados_iniciais()
-            print("✅ Sucesso! Banco conectado e dados inicializados.")
+            print("✅ Sucesso! Banco conectado.")
             break
         except OperationalError:
             if i < max_retries - 1:
-                print("⏳ Banco de dados ainda iniciando... aguardando 2 segundos.")
+                print("⏳ Aguardando banco...")
                 time.sleep(2)
             else:
-                print("❌ Erro: O Banco de dados demorou muito para responder.")
+                print("❌ Erro: Banco indisponível.")
                 raise
-    
     yield
-    
-    print("🛑 Desligando aplicação...")
+    print("🛑 Desligando...")
 
-app = FastAPI(lifespan=lifespan)
+# INICIALIZAÇÃO COM DOCUMENTAÇÃO
+app = FastAPI(
+    title="Dashboard Analytics API",
+    description=description,
+    version="1.0.0",
+    openapi_tags=tags_metadata,
+    lifespan=lifespan,
+    contact={
+        "name": "Haniel Carvalho",
+        "email": "carvalho.hanielx@gmail.com",
+    },
+    license_info={
+        "name": "MIT",
+    },
+)
 
-# Configura Prometheus
 Instrumentator().instrument(app).expose(app)
 
 app.add_middleware(
@@ -42,4 +82,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(vendas_router, prefix="/api", tags=["Vendas"])
+app.include_router(vendas_router, prefix="/api")
