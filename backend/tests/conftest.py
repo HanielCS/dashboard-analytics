@@ -4,7 +4,8 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 import database
-import services
+import models 
+from services import crud, files 
 
 # 1. CONFIGURAÇÃO DO BANCO DE DADOS DE TESTE (SQLite na Memória)
 engine_test = create_engine(
@@ -12,9 +13,11 @@ engine_test = create_engine(
     connect_args={"check_same_thread": False}, 
     poolclass=StaticPool
 )
+
 # Sobrescreve a engine do banco de dados para usar o banco de teste
 database.engine = engine_test
-services.engine = engine_test
+crud.engine = engine_test
+files.engine = engine_test
 
 from main import app
 
@@ -29,7 +32,6 @@ def session_fixture():
 
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
-    # O override de dependência continua útil para rotas que usam Depends()
     def get_session_override():
         return session
 

@@ -108,7 +108,7 @@ def atualizar_venda(id: int, dados: VendaCreate):
         db_venda = session.get(VendaDiaria, id)
         if not db_venda: return None
         
-        for key, value in dados.dict(exclude_unset=True).items():
+        for key, value in dados.model_dump(exclude_unset=True).items():
             setattr(db_venda, key, value)
             
         session.add(db_venda)

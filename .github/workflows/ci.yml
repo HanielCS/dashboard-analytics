@@ -31,7 +31,7 @@ jobs:
         REDIS_URL: "redis://localhost:6379/0"
       run: |
         cd backend
-        python -m pytest tests/
+        python -m pytest -p no:cacheprovider tests/
 
   # JOB 2: TESTES DO FRONTEND (VUE.JS)
   frontend-tests:

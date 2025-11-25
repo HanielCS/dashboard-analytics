@@ -1,25 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from routes import router as vendas_router
 from database import create_db_and_tables
-from services import criar_dados_iniciais
+from services.crud import criar_dados_iniciais
 import time
 from sqlalchemy.exc import OperationalError
 from prometheus_fastapi_instrumentator import Instrumentator
 
-app = FastAPI()
-
-Instrumentator().instrument(app).expose(app)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     max_retries = 10
     for i in range(max_retries):
         try:
@@ -35,5 +25,21 @@ def on_startup():
             else:
                 print("❌ Erro: O Banco de dados demorou muito para responder.")
                 raise
+    
+    yield
+    
+    print("🛑 Desligando aplicação...")
+
+app = FastAPI(lifespan=lifespan)
+
+# Configura Prometheus
+Instrumentator().instrument(app).expose(app)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(vendas_router, prefix="/api", tags=["Vendas"])
