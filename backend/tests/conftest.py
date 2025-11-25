@@ -4,8 +4,11 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 import database
-import models 
 from services import crud, files 
+from models import VendaDiaria, VendaCreate
+
+from main import app
+
 
 # 1. CONFIGURAÇÃO DO BANCO DE DADOS DE TESTE (SQLite na Memória)
 engine_test = create_engine(
@@ -23,11 +26,9 @@ from main import app
 
 @pytest.fixture(name="session")
 def session_fixture():
-    # Cria as tabelas no SQLite antes do teste
     SQLModel.metadata.create_all(engine_test)
     with Session(engine_test) as session:
         yield session
-    # Apaga tudo depois do teste
     SQLModel.metadata.drop_all(engine_test)
 
 @pytest.fixture(name="client")
